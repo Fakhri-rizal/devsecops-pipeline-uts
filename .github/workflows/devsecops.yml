@@ -42,3 +42,13 @@ jobs:
           docker stop web-flask || true
           docker rm web-flask || true
           docker run -d -p 5000:5000 --name web-flask secure-flask-app:latest
+  gitleaks-scan:
+    name: Gitleaks Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
