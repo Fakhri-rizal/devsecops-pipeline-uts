@@ -27,3 +27,18 @@ jobs:
       - run: |
           pip install pylint flask pytest
           pylint --fail-under=9.0 app.py
+
+  deploy-to-vm:
+    name: Build & Deploy to Target VM
+    needs: [sast-scan, pylint-check]
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Build and Run Container
+        run: |
+          docker build -t secure-flask-app:latest .
+          docker stop web-flask || true
+          docker rm web-flask || true
+          docker run -d -p 5000:5000 --name web-flask secure-flask-app:latest
