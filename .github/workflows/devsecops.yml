@@ -27,3 +27,14 @@ jobs:
       - run: |
           pip install pylint flask pytest
           pylint --fail-under=9.0 app.py
+
+  gitleaks-scan:
+    name: Gitleaks Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
