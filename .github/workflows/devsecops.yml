@@ -32,6 +32,10 @@ jobs:
     name: Pytest Unit Testing
     runs-on: ubuntu-latest
 
+  deploy-to-vm:
+    name: Build & Deploy to Target VM
+    needs: [sast-scan, pylint-check]
+    runs-on: self-hosted
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -46,6 +50,12 @@ jobs:
 
       - name: Run Pytest
         run: pytest -v test_app.py
+      - name: Build and Run Container
+        run: |
+          docker build -t secure-flask-app:latest .
+          docker stop web-flask || true
+          docker rm web-flask || true
+          docker run -d -p 5000:5000 --name web-flask secure-flask-app:latest
   gitleaks-scan:
     name: Gitleaks Secret Scan
     runs-on: ubuntu-latest
@@ -56,3 +66,6 @@ jobs:
           fetch-depth: 0
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
