@@ -28,9 +28,27 @@ jobs:
           pip install pylint flask pytest
           pylint --fail-under=9.0 app.py
 
+  pytest-test:
+    name: Pytest Unit Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Pytest
+        run: pytest -v test_app.py
+
   deploy-to-vm:
     name: Build & Deploy to Target VM
-    needs: [sast-scan, pylint-check]
+    needs: [sast-scan, pylint-check, pytest-test]
     runs-on: self-hosted
     steps:
       - name: Checkout Source Code
@@ -54,4 +72,3 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
