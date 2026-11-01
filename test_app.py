@@ -8,8 +8,6 @@ def client(tmp_path, monkeypatch):
     test_db = tmp_path / "test_users.db"
 
     monkeypatch.setattr(app_module, "DB_PATH", str(test_db))
-
-    app_module.app.config["TESTING"] = True
     app_module.init_db()
 
     with app_module.app.test_client() as test_client:
