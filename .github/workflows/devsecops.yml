@@ -48,7 +48,7 @@ jobs:
 
   deploy-to-vm:
     name: Build & Deploy to Target VM
-    needs: [sast-scan, pylint-check, pytest-test]
+    needs: [sast-scan, pylint-check, pytest-test, gitleaks-scan]
     runs-on: self-hosted
     steps:
       - name: Checkout Source Code
